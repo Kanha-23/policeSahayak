@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webpage</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        #generateButton {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Webpage Content</h1>
+    </header>
+
+    <main>
+        {{#each extractedTextLines}}
+            <p>{{ this }}</p>
+        {{/each}}
+        <br>
+        <br><br>
+      
+        <button id="generateButton" onclick="generateChargesheet()">Generate Chargesheet</button>
+    </main>
+
+    <script>
+        function generateChargesheet() {
+            var chargesheetContent = getMostSimilarPunishment();
+            openChargesheetWindow(chargesheetContent);
+        }
+
+        function openChargesheetWindow(content) {
+            var newWindow = window.open('', '_blank');
+            newWindow.document.write('<html><head><title>Chargesheet Content</title></head><body><pre>' + content + '</pre></body></html>');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rajasthan Police Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+       .dashboard {
+            background-color: #141E46;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .tabs {
+            background-color: white;
+            padding: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .tab {
+            padding: 14px 16px;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 10px;
+            background-color: #141E46;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;}
+
+        .tab:hover {
+            opacity: 90%;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .statistics {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard">
+        <h1>Rajasthan Police Dashboard</h1>
+    </div>
+
+    <div class="tabs">
+        <a href="/complainform" class="tab" onclick="showTab('fileComplaint')"><i class="fas fa-bullhorn"></i> File
+            Complaint</a>
+        <a href="/history" class="tab" onclick="showTab('history')"><i class="fas fa-history"></i> History</a>
+        <a href="#" class="tab" onclick="showTab('logout')"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="#" class="tab" onclick="showTab('performOCR')"><i class="fas fa-upload"></i> Perform OCR</a>
+    </div>
+
+    <div class="content">
+        <!-- Content for File Complaint Tab -->
+        <div id="fileComplaint">
+            <!-- Your content for File Complaint Tab goes here -->
+        </div>
+
+        <!-- Content for History Tab -->
+        <div id="history" style="display: none;">
+            <!-- Your content for History Tab goes here -->
+        </div>
+
+        <!-- Content for Logout Tab -->
+        <div id="logout" style="display: none;">
+            <!-- Your content for Logout Tab goes here -->
+        </div>
+
+        <!-- Content for Perform OCR Tab -->
+        <div id="performOCR" style="display: none;">
+            <h2>Perform OCR</h2>
+            <form id="ocrForm" enctype="multipart/form-data" action="/performOCR" method="post">
+    <input type="file" name="fileToOCR" id="fileToOCR">
+    <button type="submit">Perform OCR</button>
+</form>
+
+            <!-- Display OCR output -->
+            <div id="ocrOutputContainer" style="display: none;">
+                <h2>OCR Output</h2>
+                <pre id="ocrOutput"></pre>
+            </div>
+        </div>
+    </div>
+
+
+<center><img  src="https://www.researchgate.net/publication/335608471/figure/fig3/AS:799406525792258@1567604776586/Pie-Chart-of-Percentage-of-the-Different-Crimes-in-Owerri-Capital-City.ppm" alt=""></center>
+
+
+ 
+
+    <script>
+   
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tabContent => {
+                tabContent.style.display = 'none';
+            });
+
+            // Show the selected tab
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.style.display = 'block';
+            }
+        }
+
+        // Initially, show the first tab (adjust if needed)
+        window.onload = function () {
+            showTab('fileComplaint');
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chargesheet Content</title>
+    <!-- Your styles for the chargesheet page here -->
+</head>
+<body>
+    <h1>Chargesheet Content</h1>
+    <pre id="chargesheetContent"></pre>
+
+    <script>
+        // Retrieve the content from the URL parameters
+        var urlParams = new URLSearchParams(window.location.search);
+        var chargesheetContent = urlParams.get('content');
+
+        // Display the content in the chargesheet page
+        document.getElementById('chargesheetContent').textContent = chargesheetContent;
+    </script>
+</body>
+</html>
