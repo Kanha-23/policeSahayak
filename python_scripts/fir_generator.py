@@ -85,8 +85,10 @@ def main():
     most_similar_section = find_most_similar_section(complaint_text, data)
 
     if check_only:
+        similarity_score = similar(complaint_text, most_similar_section["Offense"]) if most_similar_section else 0
         offense_type = "cognizable" if most_similar_section and most_similar_section["Cognizable"].lower() == "cognizable" else "non-cognizable"
-        print(offense_type)
+        
+        print(f"{offense_type} | {similarity_score:.2f}")  # Output both type and similarity score
         return
 
     # Generate FIR or Warrant based on request

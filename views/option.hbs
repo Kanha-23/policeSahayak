@@ -7,37 +7,93 @@
     <title>Choose FIR or Warrant</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        /* General Styling */
         body {
-            text-align: center;
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        .container {
-            margin-top: 50px;
+        /* Card Styling */
+        .card {
+            background: white;
+            padding: 30px;
+            width: 450px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
         }
 
-        .btn {
-            padding: 10px 20px;
+        /* Back Button */
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
             font-size: 16px;
-            margin: 10px;
             cursor: pointer;
+            color: rgb(47, 28, 154);
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Button Styling */
+        .btn {
+            padding: 12px 20px;
+            font-size: 16px;
+            margin: 15px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            width: 90%;
         }
 
         .fir-btn {
             background-color: rgb(47, 28, 154);
             color: white;
+            border: none;
         }
 
         .warrant-btn {
-            background-color: rgb(255, 254, 254);
-            color: rgb(0, 0, 0);
+            background-color: white;
+            color: rgb(47, 28, 154);
             border: 2px solid rgb(47, 28, 154);
+        }
+
+        /* Hover Effects */
+        .fir-btn:hover {
+            background-color: white;
+            color: rgb(47, 28, 154);
+            border: 2px solid rgb(47, 28, 154);
+        }
+
+        .warrant-btn:hover {
+            background-color: rgb(47, 28, 154);
+            color: white;
+        }
+
+        /* Suggestion Text Styling */
+        #suggestion {
+            font-size: 18px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <div class="card">
+        <!-- Back Button -->
+        <button class="back-btn" onclick="goBack()">⬅ Back</button>
+
         <h2 id="suggestion">Loading recommendation...</h2>
         <button class="btn fir-btn" onclick="generateDocument('fir')">Generate FIR</button>
         <button class="btn warrant-btn" onclick="generateDocument('warrant')">Generate Warrant</button>
@@ -49,17 +105,15 @@
 
             if (complaintId) {
                 $.get(`/option/get-offense-type?complaintId=${encodeURIComponent(complaintId)}`)
-
                     .done(function (data) {
-                        console.log("API Response:", data);  // Debug log
+                        console.log("API Response:", data);
 
-                        if (data.type.trim().toLowerCase() === "cognizable") {
-                            $("#suggestion").text("System Analysis: FIR is Recommended");
-                        } else {
-                            $("#suggestion").text("System Analysis: Search Warrant is Recommended");
-                        }
+                        let recommendationText = data.type.trim().toLowerCase() === "cognizable"
+                            ? "System Analysis: FIR is Recommended"
+                            : "System Analysis: Search Warrant is Recommended";
+
+                        $("#suggestion").html(recommendationText + "<br><br><b>Similarity Score:</b> " + (parseFloat(data.score) * 100) + "%");
                     })
-
                     .fail(function (jqXHR, textStatus, errorThrown) {
                         console.error("AJAX Error:", textStatus, errorThrown, jqXHR.responseText);
                         $("#suggestion").text("Error: Unable to fetch recommendation.");
@@ -67,22 +121,26 @@
             } else {
                 $("#suggestion").text("Error: Missing Complaint ID.");
             }
-         // Function to handle FIR or Warrant generation
-        window.generateDocument = function (type) {
-            if (!complaintId) {
-                alert("Missing Complaint ID.");
-                return;
-            }
 
-            let url = type === 'fir' 
-                ? `/option/generate-fir?complaintId=${encodeURIComponent(complaintId)}` 
-                : `/option/generate-warrant?complaintId=${encodeURIComponent(complaintId)}`;
+            // Function to handle FIR or Warrant generation
+            window.generateDocument = function (type) {
+                if (!complaintId) {
+                    alert("Missing Complaint ID.");
+                    return;
+                }
 
-            console.log("Requesting:", url);  // Debugging
-            window.location.href = url;  // Redirect to trigger document generation
-        };
-    });
+                let url = type === 'fir'
+                    ? `/option/generate-fir?complaintId=${encodeURIComponent(complaintId)}`
+                    : `/option/generate-warrant?complaintId=${encodeURIComponent(complaintId)}`;
 
+                console.log("Requesting:", url);
+                window.location.href = url;
+            };
+        });
+
+        function goBack() {
+            window.history.back();
+        }
     </script>
 </body>
 

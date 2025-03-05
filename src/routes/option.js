@@ -27,19 +27,17 @@ router.get("/get-offense-type", (req, res) => {
             return res.status(500).json({ error: "Error in analysis" });
         }
     
-        const response = stdout.trim(); // Get clean output from Python
-        console.log("Python Script Raw Output:", response);  // Log response from Python
-    
+        const response = stdout.trim();
         if (!response) {
             return res.status(500).json({ error: "Empty response from script" });
         }
     
-        const offenseType = response.trim().toLowerCase() === "cognizable" ? "cognizable" : "non-cognizable";
-
-        console.log("Final API Response Type:", offenseType); // Debugging
+        // Split response into type and similarity score (assuming Python script prints both)
+        const [offenseType, similarityScore] = response.split("|").map(item => item.trim());
     
-        res.json({ type: offenseType });
+        res.json({ type: offenseType, score: similarityScore });
     });
+    
     
 });
 
