@@ -24,13 +24,14 @@
         }
 
         .fir-btn {
-            background-color: green;
+            background-color: rgb(47, 28, 154);
             color: white;
         }
 
         .warrant-btn {
-            background-color: red;
-            color: white;
+            background-color: rgb(255, 254, 254);
+            color: rgb(0, 0, 0);
+            border: 2px solid rgb(47, 28, 154);
         }
     </style>
 </head>
@@ -66,7 +67,21 @@
             } else {
                 $("#suggestion").text("Error: Missing Complaint ID.");
             }
-        });
+         // Function to handle FIR or Warrant generation
+        window.generateDocument = function (type) {
+            if (!complaintId) {
+                alert("Missing Complaint ID.");
+                return;
+            }
+
+            let url = type === 'fir' 
+                ? `/option/generate-fir?complaintId=${encodeURIComponent(complaintId)}` 
+                : `/option/generate-warrant?complaintId=${encodeURIComponent(complaintId)}`;
+
+            console.log("Requesting:", url);  // Debugging
+            window.location.href = url;  // Redirect to trigger document generation
+        };
+    });
 
     </script>
 </body>

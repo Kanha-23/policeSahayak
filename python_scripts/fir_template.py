@@ -1,8 +1,7 @@
 def generate_fir_text(complainant_data, most_similar_section):
-    return f"""
-    First Information Report (FIR)  
-
-    [Complainant Information]
+   return f"""
+   
+    COMPLAINANT INFORMATION:
     Name: {complainant_data["name"]}
     Age: {complainant_data["age"]}
     Occupation: {complainant_data["occupation"]}
@@ -10,22 +9,19 @@ def generate_fir_text(complainant_data, most_similar_section):
     Pin Code: {complainant_data["pin"]}
     Contact Information: {complainant_data["number"]}
     Date: {complainant_data["date"].strftime("%B %d, %Y") if complainant_data["date"] else ""}
-    
-    To,
 
-    The Officer in Charge,
-    {complainant_data["city"]} Police,
+    POLICE DETAILS:
+    To: The Officer in Charge
+    {complainant_data["city"]} Police Station
 
-    Subject: {complainant_data["dis"]}
+    SUBJECT: {complainant_data["dis"]} 
 
-    [Description of the Offense]
+    DESCRIPTION: 
     {complainant_data["detail"]}
 
-    [Section Applied]: {most_similar_section["Section"]} - {most_similar_section["Description"]}
-
-    I request the police to take immediate action against the accused and conduct a thorough investigation.
+    I request the police to take immediate action against the accused thorough investigation.
 
     Yours faithfully,
     {complainant_data["name"]}
-    {complainant_data["number"]}
+    Signature:---------------
     """

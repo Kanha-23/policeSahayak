@@ -43,7 +43,7 @@ router.get("/get-offense-type", (req, res) => {
     
 });
 
-
+// Route to generate FIR
 router.get("/generate-fir", (req, res) => {
     const complaintId = req.query.complaintId;
 
@@ -51,11 +51,20 @@ router.get("/generate-fir", (req, res) => {
         return res.status(400).json({ error: "Missing complaintId" });
     }
 
-    exec(`python3 fir_generator.py ${complaintId}`, () => {
+    const scriptPath = path.join(__dirname, "..", "..", "python_scripts", "fir_generator.py");
+
+    exec(`python "${scriptPath}" "${complaintId}"`, (error, stdout, stderr) => {
+        if (error) {
+            console.error("Execution Error:", stderr || error.message);
+            return res.status(500).json({ error: "Error generating FIR" });
+        }
+
+        console.log("FIR Generation Output:", stdout);
         res.redirect("/public/pdfs/FIR_Report.pdf");
     });
 });
 
+// Route to generate Warrant
 router.get("/generate-warrant", (req, res) => {
     const complaintId = req.query.complaintId;
 
@@ -63,7 +72,15 @@ router.get("/generate-warrant", (req, res) => {
         return res.status(400).json({ error: "Missing complaintId" });
     }
 
-    exec(`python3 fir_generator.py ${complaintId} --warrant`, () => {
+    const scriptPath = path.join(__dirname, "..", "..", "python_scripts", "fir_generator.py");
+
+    exec(`python "${scriptPath}" "${complaintId}" --warrant`, (error, stdout, stderr) => {
+        if (error) {
+            console.error("Execution Error:", stderr || error.message);
+            return res.status(500).json({ error: "Error generating Warrant" });
+        }
+
+        console.log("Warrant Generation Output:", stdout);
         res.redirect("/public/pdfs/Warrant_Report.pdf");
     });
 });

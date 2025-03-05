@@ -22,12 +22,33 @@ def find_most_similar_section(complaint, sections):
 
     return most_similar_section
 
+class CustomPDF(FPDF):
+    def header(self):
+        """ Set background color for all pages """
+        self.set_fill_color(255, 232, 168)  #  background
+        self.rect(0, 0, 210, 297, 'F')  # Full page A4 background
+
+    def add_formatted_text(self, content):
+        """ Add formatted text to the PDF """
+        self.set_text_color(0, 0, 0)  # Black text
+        self.set_font("Arial", size=12)
+        self.multi_cell(0, 10, content, align='L')
+
 def generate_pdf(content, filename):
-    pdf = FPDF()
+    pdf = CustomPDF()
     pdf.add_page()
+    
+    title = "First Information Report (FIR)" if "FIR" in filename else "SEARCH WARRANT"
+    
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(200, 10,title, ln=True, align='C')
+    pdf.ln(10)  # Line break
+
     pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, content)
+    pdf.add_formatted_text(content)
+
     pdf.output(f"public/pdfs/{filename}")
+
 
 
 def main():
@@ -68,7 +89,7 @@ def main():
         print(offense_type)
         return
 
-    # Determine whether to generate FIR or Warrant
+    # Generate FIR or Warrant based on request
     if warrant_mode or (most_similar_section and most_similar_section["Cognizable"].lower() != "cognizable"):
         content = generate_warrant_text(complainant_data)
         generate_pdf(content, "Warrant_Report.pdf")
