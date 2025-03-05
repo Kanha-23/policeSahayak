@@ -8,7 +8,7 @@ from difflib import SequenceMatcher
 
 # Global variable to store most similar punishment
 most_similar_punishment = None
-
+output_data = []
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
@@ -41,7 +41,7 @@ def ocr(image_path):
     myconfig = r"--psm 3 --oem 3"
     img = cv2.imread(image_path)
     extracted_text = pytesseract.image_to_string(PIL.Image.open(image_path), config=myconfig)
-    print(extracted_text)
+    # print(extracted_text)
     return extracted_text
 
 def main():
@@ -66,19 +66,14 @@ def main():
     store_most_similar_punishment(top_sections)
     
     if top_sections:
-        print("\nTop 4 Cognizable Sections with Highest Similarity:")
         for section, similarity in top_sections:
-            print("-" * 200)
-            print("\nDescription:", section["Description"])
-            print("\nSection:", section["IPC-Section"])
-            print("\nSection Category:", section["Cognizable"])
-            print("\nSection Punishment:", section["Punishment"])
-            print("\nSimilarity Score:", similarity)
-            print("\n")
-        print("-" * 200)
-        print("\n\n\n")
-    else:
-        print("No matching cognizable section found for the extracted text.")
+            output_data.append({
+                "IPC-Section": section["IPC-Section"],
+                "Description": section["Description"],
+                "SimilarityScore": round(similarity * 100, 2)  # Convert to percentage
+            })
+
+    print(json.dumps(output_data))  # Return JSON output
 
 if __name__ == "__main__":
     main()

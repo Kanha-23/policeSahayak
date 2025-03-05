@@ -23,6 +23,11 @@ const path = require('path');
 const webpageRoute = require("./routes/webpageRoute");const multer = require('multer');
 const upload = multer({ dest: 'public/uploads/' });
 const optionRoute = require("./routes/option");
+const fs = require("fs");
+
+
+
+
 
 // Add this function to run Python scripts asynchronously
 function runPythonScriptAsync(scriptPath, ...args) {
@@ -90,33 +95,107 @@ app.use("", historyRoute);
 app.use('/generate-pdf', generatePDFRoute);
 app.use("", webpageRoute);        
 
-
-// Inside the /performOCR route handler
 app.post("/performOCR", async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).send("No file uploaded.");
-    }
+      if (!req.file) {
+          return res.status(400).send("No file uploaded.");
+      }
 
-    const image_path = path.join(__dirname, "..", "public", "uploads", req.file.filename);
+      const image_path = path.join(__dirname, "..", "public", "uploads", req.file.filename);
+      const pythonProcess = spawn("python", ["python_scripts/merge.py", image_path]);
 
-    const extracted_text = await runPythonScriptAsync('python_scripts/merge.py', image_path);
+      let output = "";
+      pythonProcess.stdout.on("data", (data) => {
+          output += data.toString();
+      });
 
-    if (!extracted_text) {
-      return res.status(500).send("No relevant text extracted.");
-    }
+      pythonProcess.stderr.on("data", (data) => {
+          console.error("Error:", data.toString());
+      });
 
-    // Split the extracted text into lines
-    const lines = extracted_text.split('\n'); 
-     
-
-    // Pass the lines to the webpage view
-    res.render("webpage", { extractedTextLines: lines });
+      pythonProcess.on("close", (code) => {
+          if (code === 0) {
+              try {
+                  const extractedData = JSON.parse(output);
+                  res.render("webpage", { extractedTextLines: extractedData });
+              } catch (error) {
+                  console.error("JSON Parsing Error:", error);
+                  res.status(500).send("Error processing extracted data.");
+              }
+          } else {
+              res.status(500).send("Python script execution failed.");
+          }
+      });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
+      console.error(error);
+      res.status(500).send("Internal Server Error");
   }
 });
+
+app.get("/get-ipc-details", (req, res) => {
+  const ipcSection = req.query.section;
+
+  if (!ipcSection) {
+      return res.status(400).json({ error: "IPC Section is required" });
+  }
+
+  const filePath = path.join(__dirname, "..", "csvjson.json");
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+          console.error("❌ Error reading JSON file:", err);
+          return res.status(500).json({ error: "Error reading data file" });
+      }
+
+      try {
+          const ipcData = JSON.parse(data);
+          const foundIPC = ipcData.find(item => item["IPC-Section"] == ipcSection);
+
+          if (!foundIPC) {
+              console.warn(`⚠ IPC Section ${ipcSection} not found.`);
+              return res.status(404).json({ error: "IPC Section not found" });
+          }
+
+          res.json({
+              section: foundIPC["IPC-Section"],
+              type: "Added Manually",
+              description: foundIPC.Description
+          });
+      } catch (jsonError) {
+          console.error("❌ JSON Parsing Error:", jsonError);
+          return res.status(500).json({ error: "Invalid JSON format in file" });
+      }
+  });
+});
+
+
+
+// Inside the /performOCR route handler
+// app.post("/performOCR", async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).send("No file uploaded.");
+//     }
+
+//     const image_path = path.join(__dirname, "..", "public", "uploads", req.file.filename);
+
+//     const extracted_text = await runPythonScriptAsync('python_scripts/merge.py', image_path);
+
+//     if (!extracted_text) {
+//       return res.status(500).send("No relevant text extracted.");
+//     }
+
+//     // Split the extracted text into lines
+//     const lines = extracted_text.split('\n'); 
+     
+
+//     // Pass the lines to the webpage view
+//     res.render("webpage", { extractedTextLines: lines });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 
 

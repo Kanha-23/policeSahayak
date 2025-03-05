@@ -15,7 +15,7 @@ routes.get("/history", async (req, res) => {
 });
 
 
-
+ 
 // Handle search requests
 routes.post("/history/search", async (req, res) => {
     try {
