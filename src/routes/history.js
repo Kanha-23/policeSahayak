@@ -5,7 +5,7 @@ const Complain = require("../models/complain");
 
 // Display all records or filtered records based on search
 routes.get("/history", async (req, res) => {
-    try {  
+    try {    
         const data = await Complain.find({});
         res.render("history", { Complain: data });
     } catch (error) {
@@ -60,7 +60,7 @@ routes.post("/history/search", async (req, res) => {
     }
 });
 
- 
+   
 module.exports = routes;
 
 

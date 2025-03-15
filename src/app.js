@@ -91,9 +91,9 @@ app.use("", dashboardRoute);
 app.use("", mainRoute);
 app.use("", userRoute); 
 app.use("", complainformRoute);  
-app.use("", historyRoute);
+app.use("", historyRoute);   
 app.use('/generate-pdf', generatePDFRoute);
-app.use("", webpageRoute);        
+app.use("", webpageRoute);             
 
 app.post("/performOCR", async (req, res) => {
   try {
@@ -103,12 +103,12 @@ app.post("/performOCR", async (req, res) => {
 
       const image_path = path.join(__dirname, "..", "public", "uploads", req.file.filename);
       const pythonProcess = spawn("python", ["python_scripts/merge.py", image_path]);
-
+ 
       let output = "";
       pythonProcess.stdout.on("data", (data) => {
-          output += data.toString();
+          output += data.toString(); 
       });
-
+  
       pythonProcess.stderr.on("data", (data) => {
           console.error("Error:", data.toString());
       });
@@ -117,6 +117,7 @@ app.post("/performOCR", async (req, res) => {
           if (code === 0) {
               try {
                   const extractedData = JSON.parse(output);
+                  console.log("Extracted OCR Data:", extractedData);
                   res.render("webpage", { extractedTextLines: extractedData });
               } catch (error) {
                   console.error("JSON Parsing Error:", error);
@@ -124,7 +125,7 @@ app.post("/performOCR", async (req, res) => {
               }
           } else {
               res.status(500).send("Python script execution failed.");
-          }
+          }    
       });
   } catch (error) {
       console.error(error);
@@ -143,7 +144,7 @@ app.get("/get-ipc-details", (req, res) => {
 
   fs.readFile(filePath, "utf8", (err, data) => {
       if (err) {
-          console.error("❌ Error reading JSON file:", err);
+          console.error(" Error reading JSON file:", err);
           return res.status(500).json({ error: "Error reading data file" });
       }
 
@@ -167,35 +168,6 @@ app.get("/get-ipc-details", (req, res) => {
       }
   });
 });
-
-
-
-// Inside the /performOCR route handler
-// app.post("/performOCR", async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).send("No file uploaded.");
-//     }
-
-//     const image_path = path.join(__dirname, "..", "public", "uploads", req.file.filename);
-
-//     const extracted_text = await runPythonScriptAsync('python_scripts/merge.py', image_path);
-
-//     if (!extracted_text) {
-//       return res.status(500).send("No relevant text extracted.");
-//     }
-
-//     // Split the extracted text into lines
-//     const lines = extracted_text.split('\n'); 
-     
-
-//     // Pass the lines to the webpage view
-//     res.render("webpage", { extractedTextLines: lines });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
 
 
 

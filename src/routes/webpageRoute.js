@@ -12,7 +12,7 @@ router.get("/webpage", async (req, res) => {
 
     // Run the Python script with the dynamic image path
     const extractedText = await runPythonScriptAsync('python_scripts/merge.py', imagePath);
-    // console.log(extractedText)
+    console.log(extractedText)
     // Render the HBS page and pass the extracted text as a variable
     res.render("webpage", { extractedText });
   } catch (error) {
