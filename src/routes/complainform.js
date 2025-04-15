@@ -36,7 +36,7 @@ router.post('/complainform', async (req, res, next) => {
             aaddress: req.body.aaddress,
             aoccupation: req.body.aoccupation,
             acity: req.body.acity,
-            adistrict: req.body.adistrict,
+            adistrict: req.body.adistrict, 
             astate: req.body.astate
 
 

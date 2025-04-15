@@ -1,11 +1,14 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rajasthan Police Dashboard</title>
+    <title>PoliceShayak Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,33 +17,43 @@
             background-color: #f4f4f4;
         }
 
-       .dashboard {
+        .dashboard {
             background-color: #141E46;
             color: #fff;
             text-align: center;
             padding: 20px;
         }
 
-        .tabs {
-            background-color: white;
-            padding: 10px;
-            overflow: hidden;
+        /* Navbar */
+        .navbar {
+            background-color: #141E46;
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .tab {
-            padding: 14px 16px;
+        .navbar a {
+            color: white;
             text-decoration: none;
-            color: #fff;
-            border-radius: 10px;
-            background-color: #141E46;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s;}
+            padding: 14px 20px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 6px;
+            margin: 6px;
+        }
 
-        .tab:hover {
-            opacity: 90%;
+        .navbar a i {
+            margin-right: 8px;
+        }
+
+        .navbar a:hover {
+            background-color: #1f2d5a;
+            color: #fff;
         }
 
         .content {
@@ -54,81 +67,126 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
+        @media screen and (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="dashboard">
-        <h1>Rajasthan Police Dashboard</h1>
+        <h1>PoliceShayak Dashboard</h1>
     </div>
 
-    <div class="tabs">
-        <a href="/complainform" class="tab" onclick="showTab('fileComplaint')"><i class="fas fa-bullhorn"></i> File
-            Complaint</a>
-        <a href="/history" class="tab" onclick="showTab('history')"><i class="fas fa-history"></i> History</a>
-        <a href="#" class="tab" onclick="showTab('logout')"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-        <a href="#" class="tab" onclick="showTab('performOCR')"><i class="fas fa-upload"></i> Perform OCR</a>
+    <!-- Updated Navigation Bar -->
+    <div class="navbar">
+        <a href="/complainform" onclick="showTab('fileComplaint')"><i class="fas fa-bullhorn"></i> File Complaint</a>
+        <a href="/history" onclick="showTab('history')"><i class="fas fa-history"></i> History</a>
+        
+        <a href="#" onclick="showTab('performOCR')"><i class="fas fa-upload"></i> Perform OCR</a>
+        <a href="#" onclick="showTab('logout')"><i class="fas fa-sign-out-alt"></i> Log Out</a>
     </div>
 
     <div class="content">
-        <!-- Content for File Complaint Tab -->
         <div id="fileComplaint">
             <!-- Your content for File Complaint Tab goes here -->
         </div>
 
-        <!-- Content for History Tab -->
         <div id="history" style="display: none;">
-            <!-- Your content for History Tab goes here -->
+            <!-- History Content -->
         </div>
 
-        <!-- Content for Logout Tab -->
         <div id="logout" style="display: none;">
-            <!-- Your content for Logout Tab goes here -->
+            <!-- Logout Content -->
         </div>
 
-        <!-- Content for Perform OCR Tab -->
         <div id="performOCR" style="display: none;">
-            <h2>Perform OCR</h2>
-            <form id="ocrForm" enctype="multipart/form-data" action="/performOCR" method="post">
-    <input type="file" name="fileToOCR" id="fileToOCR">
-    <button type="submit">Perform OCR</button>
-</form>
+    <h2 style="color: #141E46; text-align: center; margin-bottom: 20px;">Perform OCR</h2>
+    
+    <form id="ocrForm" enctype="multipart/form-data" action="/performOCR" method="post" style="max-width: 500px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <label for="fileToOCR" style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">Upload Image or PDF:</label>
+        <input type="file" name="fileToOCR" id="fileToOCR" accept="image/*,application/pdf" style="margin-bottom: 20px; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+        
+        <button type="submit" style="width: 100%; background-color: #141E46; color: #fff; padding: 12px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
+            <i class="fas fa-magic"></i> Perform OCR
+        </button>
+    </form>
 
-            <!-- Display OCR output -->
-            <div id="ocrOutputContainer" style="display: none;">
-                <h2>OCR Output</h2>
-                <pre id="ocrOutput"></pre>
-            </div>
-        </div>
+    <!-- Display OCR output -->
+    <div id="ocrOutputContainer" style="display: none; max-width: 700px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <h3 style="color: #141E46; margin-bottom: 10px;">OCR Output</h3>
+        <pre id="ocrOutput" style="white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', monospace; background: #f9f9f9; padding: 15px; border-radius: 6px;"></pre>
+    </div>
+</div>
     </div>
 
+    {{!-- <center>
+        <img src="https://www.researchgate.net/publication/335608471/figure/fig3/AS:799406525792258@1567604776586/Pie-Chart-of-Percentage-of-the-Different-Crimes-in-Owerri-Capital-City.ppm" alt="" width="70%">
+    </center> --}}
+    <div class="statistics" style="max-width: 500px; margin: 30px auto; border-radius: 10px;">
+    <h2 style="color: #141E46; font-size: 22px;">Crime Statistics Overview</h2>
+    <canvas id="crimeChart" style="width: 100%; height: 300px;"></canvas>
+</div>
 
-<center><img  src="https://www.researchgate.net/publication/335608471/figure/fig3/AS:799406525792258@1567604776586/Pie-Chart-of-Percentage-of-the-Different-Crimes-in-Owerri-Capital-City.ppm" alt=""></center>
 
-
- 
 
     <script>
-   
         function showTab(tabId) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tabContent => {
-                tabContent.style.display = 'none';
+            document.querySelectorAll('.content > div').forEach(div => {
+                div.style.display = 'none';
             });
 
-            // Show the selected tab
             const selectedTab = document.getElementById(tabId);
             if (selectedTab) {
                 selectedTab.style.display = 'block';
             }
         }
 
-        // Initially, show the first tab (adjust if needed)
         window.onload = function () {
             showTab('fileComplaint');
         };
     </script>
-</body>
+    <script>
+    const ctx = document.getElementById('crimeChart').getContext('2d');
+    const crimeChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Robbery', 'Assault', 'Kidnapping', 'Cybercrime', 'Homicide'],
+            datasets: [{
+                label: 'Crime Distribution',
+                data: [25, 20, 15, 10, 30], // Sample data
+                backgroundColor: [
+                    '#141E46', '#274878', '#3a5c9b', '#627fb4', '#8fa8d4'
+                ],
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '60%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#141E46',
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                title: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
 
+
+</body>
 </html>

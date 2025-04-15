@@ -1,7 +1,7 @@
 const express = require("express");
 const routes = express.Router();
 const { parse, format } = require('date-fns');
-const Complain = require("../models/complain");
+const Complain = require("../models/complain");     
 
 // Display all records or filtered records based on search
 routes.get("/history", async (req, res) => {

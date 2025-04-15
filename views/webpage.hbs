@@ -5,6 +5,244 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IPC Applicable</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7;
+        color: #333;
+    }
+
+    header {
+        background-color: #141E46; /* Deep Navy Blue */
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    h1 {
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    main {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .section-box {
+        background-color: #e8e8e8;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .description {
+        display: none;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f0f3f8;
+        border-left: 4px solid #141E46;
+    }
+
+    .toggle-btn,
+    .delete-btn {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 8px 15px;
+        background-color: #141E46;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .delete-btn {
+        background-color: #2C365D; /* Muted Dark Blue */
+        margin-left: 10px;
+    }
+
+    .toggle-btn:hover {
+        background-color: #1f2b66;
+    }
+
+    .delete-btn:hover {
+        background-color: #3d497a;
+    }
+
+    /* Modal Popup */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .modal input {
+        width: 100%;
+        padding: 8px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .modal .modal-btn {
+        background-color: #141E46;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+
+    .modal .modal-btn:hover {
+        background-color: #1f2b66;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        float: right;
+        color: #666;
+    }
+
+    .close-btn:hover {
+        color: #141E46;
+    }
+</style>
+
+</head>
+
+<body>
+    <header>
+        <button class="header-btn" onclick="goBack()">⬅ Back</button>
+        <h1>IPC Applicable</h1>
+        <button class="header-btn" onclick="openModal()">➕ Add New</button>
+    </header>
+
+    <main id="ipc-list">
+        {{#each extractedTextLines}}
+        <div class="section-box">
+            <p><b>IPC Section:</b> {{this.IPC-Section}}</p>
+            <button class="toggle-btn" onclick="toggleDescription(this)">Show Description</button>
+            <p class="description">{{this.Description}}</p>
+            <button class="delete-btn" onclick="deleteIPC(this)">Delete</button>
+        </div>
+        {{/each}}
+    </main>
+
+    <!-- Modal -->
+    <div id="ipcModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✖</button>
+            <h3>Add New IPC Section</h3>
+            <input type="text" id="ipcSection" placeholder="Enter IPC Section">
+            <button class="modal-btn" onclick="fetchIPCDetails()">Fetch Details</button>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function toggleDescription(button) {
+            const desc = button.nextElementSibling;
+            const isHidden = desc.style.display === "none" || desc.style.display === "";
+            desc.style.display = isHidden ? "block" : "none";
+            button.textContent = isHidden ? "Hide Description" : "Show Description";
+        }
+
+        function deleteIPC(button) {
+            button.parentElement.remove();
+        }
+
+        function openModal() {
+            document.getElementById("ipcModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("ipcModal").style.display = "none";
+        }
+
+        function fetchIPCDetails() {
+            const ipcSection = document.getElementById("ipcSection").value.trim();
+            if (!ipcSection) {
+                alert("Please enter an IPC Section.");
+                return;
+            }
+
+            fetch(`/get-ipc-details?section=${ipcSection}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert("IPC Section not found.");
+                    } else {
+                        const newIPC = `
+                            <div class="section-box">
+                                <p><b>IPC Section:</b> ${data.section}</p>
+                                <p><b>Similarity Score:</b> ${data.similarity}%</p>
+                                <button class="toggle-btn" onclick="toggleDescription(this)">Show Description</button>
+                                <p class="description">${data.description}</p>
+                                <button class="delete-btn" onclick="deleteIPC(this)">Delete</button>
+                            </div>
+                        `;
+                        document.getElementById("ipc-list").innerHTML += newIPC;
+                        closeModal();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching IPC details:", error);
+                });
+        }
+    </script>
+</body>
+
+</html>
+
+{{!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPC Applicable</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -149,8 +387,8 @@
         {{#each extractedTextLines}}
         <div class="section-box">
             <p><b>IPC Section:</b> {{this.IPC-Section}}</p>
-            <p><b>Similarity Score:</b> {{this.SimilarityScore}}%</p>
-            <button class="toggle-btn" onclick="toggleDescription(this)">Show Description</button>
+            {{!-- <p><b>Similarity Score:</b> {{this.SimilarityScore}}%</p> --}}
+            {{!-- <button class="toggle-btn" onclick="toggleDescription(this)">Show Description</button>
             <p class="description">{{this.Description}}</p>
             <button class="delete-btn" onclick="deleteIPC(this)">Delete</button>
         </div>
@@ -228,260 +466,5 @@
     </script>
 </body>
 
-</html>
+</html> --}}
 
-
-
-{{!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPC Applicable</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
-            color: #333;
-        }
-
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 15px;
-            text-align: center;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 10px;
-        }
-
-        .header-btn:hover {
-            text-decoration: underline;
-        }
-
-        h1 {
-            margin: 0;
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        main {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .section-box {
-            background-color: #e8e8e8;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .description {
-            display: none;
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #f1f1f1;
-            border-left: 4px solid #4caf50;
-        }
-
-        .toggle-btn, .delete-btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 15px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .delete-btn {
-            background-color: red;
-            margin-left: 10px;
-        }
-
-        .toggle-btn:hover {
-            background-color: #45a049;
-        }
-
-        .delete-btn:hover {
-            background-color: darkred;
-        }
-
-        .add-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .add-btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Modal Popup */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .modal .modal-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .modal .modal-btn:hover {
-            background-color: #218838;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            float: right;
-        }
-    </style>
-</head>
-
-<body>
-    <header>
-        <button class="header-btn" onclick="goBack()">⬅ Back</button>
-        <h1>IPC Applicable</h1>
-        <button class="header-btn" onclick="openModal()">➕ Add New</button>
-    </header>
-
-    <main id="ipc-list">
-        {{#each extractedTextLines}}
-        <div class="section-box">
-            <p><b>IPC Section:</b> {{this.[IPC-Section]}}</p>
-            <p><b>Similarity Score:</b> {{this.SimilarityScore}}%</p>
-            <button class="toggle-btn" onclick="toggleDescription(this)">Show Description</button>
-            <p class="description">{{this.Description}}</p>
-            <button class="delete-btn" onclick="deleteIPC(this)">Delete</button>
-        </div>
-        {{/each}}
-    </main>
-
-    <!-- Modal Popup -->
-    <div id="ipcModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">✖</button>
-            <h3>Add New IPC Section</h3>
-            <input type="text" id="ipcSection" placeholder="IPC Section">
-            <input type="number" id="similarityScore" placeholder="Similarity Score">
-            <input type="text" id="ipcDescription" placeholder="Description">
-            <button class="modal-btn" onclick="addIPC()">Add</button>
-        </div>
-    </div>
-
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-
-        function toggleDescription(button) {
-            var description = button.nextElementSibling;
-            if (description.style.display === "none" || description.style.display === "") {
-                description.style.display = "block";
-                button.textContent = "Hide Description";
-            } else {
-                description.style.display = "none";
-                button.textContent = "Show Description";
-            }
-        }
-
-        function deleteIPC(button) {
-            button.parentElement.remove();  // Remove the IPC section
-        }
-
-        function openModal() {
-            document.getElementById("ipcModal").style.display = "block";
-        }
-
-        function closeModal() {
-            document.getElementById("ipcModal").style.display = "none";
-        }
-
-        function addIPC() {
-            let ipcSection = document.getElementById("ipcSection").value;
-            let similarityScore = document.getElementById("similarityScore").value;
-            let ipcDescription = document.getElementById("ipcDescription").value;
-
-            if (!ipcSection || !similarityScore || !ipcDescription) {
-                alert("All fields are required!");
-                return;
-            }
-
-            let newIPC = `
-                <div class="section-box">
-                    <p><b>IPC Section:</b> ${ipcSection}</p>
-                    <p><b>Similarity Score:</b> ${similarityScore}%</p>
-                    <button class="toggle-btn" onclick="toggleDescription(this)">Show Description</button>
-                    <p class="description">${ipcDescription}</p>
-                    <button class="delete-btn" onclick="deleteIPC(this)">Delete</button>
-                </div>
-            `;
-
-            document.getElementById("ipc-list").innerHTML += newIPC;
-            closeModal();  // Close the popup
-        }
-    </script>
-</body>
-
-</html>
- --}}

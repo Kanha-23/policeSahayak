@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{!-- <!DOCTYPE html>
 <html lang="en">
 
     <head>
@@ -123,7 +123,7 @@
 
     <body>
         <nav class="navbar">
-            <div class="logo"><h2>Rajasthan Police.</h2></div>
+            <div class="logo"><h2>PoliceShayak</h2></div>
         </nav>
 
         <div class="container">
@@ -244,6 +244,344 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+    </body>
+</html> --}}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Data Table</title>
+        <style>
+            .view-btn {
+        cursor: pointer;
+        background-color: #141E46;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        border-radius: 10px;
+        max-width: 600px;
+        color: #000;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+    .navbar{
+      background-color: #141E46;
+      display:flex;
+      justify-content: space-between;
+    } 
+    .logo{
+      color:white;
+      margin: 5px;
+      margin-left: 10px;
+    }
+        header {
+            align-items: center;
+            background-color: #141E46;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            z-index: 1;
+        }
+        .container{
+            text-align: center;
+            margin-top: 10px;
+        }
+        .container h2{
+            font-size: 30px;
+        }
+        main {
+            margin-top: 80px;
+            /* Adjust based on header height */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .table-container {
+            width: 90%;
+            max-height: 500px; /* Set the max height for the container */
+            overflow: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width:100%;
+            overflow-x: scroll;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        th,
+        td {
+            font-size: 9px;
+            padding: 5px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            width: fit-content;
+            text-overflow: clip;
+        }
+
+        th {
+            background-color: #141E46;
+            opacity: 90%;
+            color: #fff;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        select {
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #141E46;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 8px;
+        }
+        .search{
+            cursor: pointer;
+            background-color: #141E46;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            padding: 10px;
+        }
+        button:hover{
+            opacity: 90%;
+        }
+    </style>
+    </head>
+
+    <body>
+        <nav class="navbar">
+            <div class="logo"><h2>PoliceSahayak</h2></div>
+        </nav>
+
+        <div class="container">
+            <h2>Complaint Record</h2>
+
+            <!-- Search Form -->
+            <form action="/history/search" method="post">
+
+                <label for="searchTerm">Search:</label>
+                <input type="text" id="searchTerm" name="searchTerm"
+                    placeholder="Enter search term">
+
+                <!-- Select search type -->
+                <select name="searchType" id="searchType">
+                    <option value="all">All</option>
+                    <option value="name">Name</option>
+                    <option value="date">Date</option>
+                    <option value="city">City</option>
+                </select>
+
+                <button type="submit" class="search">Search</button>
+            </form>
+
+            <table align="center" border="1">
+    <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Occupation</th>
+        <th>Number</th>
+        <th>Email</th>
+        <th>Date of Incident</th>
+        <th>Location of Incident</th>
+        <th>Pincode</th>
+        <th>City</th>
+        <th>District</th>
+        <th>State</th>
+
+        <!-- Hidden Columns -->
+        <th style="display:none;">Offence</th>
+        <th style="display:none;">Details</th>
+        <th style="display:none;">People Involved</th>
+        <th style="display:none;">Identity Proof</th>
+        <th style="display:none;">Proof ID Number</th>
+        <th style="display:none;">Name of Accused</th>
+        <th style="display:none;">Age of Accused</th>
+        <th style="display:none;">Address of Accused</th>
+        <th style="display:none;">Occupation of Accused</th>
+        <th style="display:none;">City of Accused</th>
+        <th style="display:none;">District of Accused</th>
+        <th style="display:none;">State of Accused</th>
+
+        <th>Actions</th>
+    </tr>
+
+    {{#each Complain}}
+    <tr>
+        <td>{{this.name}}</td>
+        <td>{{this.age}}</td>
+        <td>{{this.occupation}}</td>
+        <td>{{this.number}}</td>
+        <td>{{this.email}}</td>
+        <td>{{this.date}}</td>
+        <td>{{this.loc}}</td>
+        <td>{{this.pin}}</td>
+        <td>{{this.city}}</td>
+        <td>{{this.district}}</td>
+        <td>{{this.state}}</td>
+
+        <!-- Hidden Data -->
+        <td style="display:none;">{{this.dis}}</td>
+        <td style="display:none;">{{this.detail}}</td>
+        <td style="display:none;">{{this.people}}</td>
+        <td style="display:none;">{{this.identityProof}}</td>
+        <td style="display:none;">{{this.proof}}</td>
+        <td style="display:none;">{{this.aname}}</td>
+        <td style="display:none;">{{this.aage}}</td>
+        <td style="display:none;">{{this.aaddress}}</td>
+        <td style="display:none;">{{this.aoccupation}}</td>
+        <td style="display:none;">{{this.acity}}</td>
+        <td style="display:none;">{{this.adistrict}}</td>
+        <td style="display:none;">{{this.astate}}</td>
+
+        <td>
+            <button class="view-btn">View</button>
+            <a href="/option?complaintId={{this._id}}" class="btn btn-primary">Further Process</a>
+        </td>
+    </tr>
+    {{/each}}
+</table>
+        </div>
+        <!-- Modify the existing script block in history.hbs -->
+
+        <div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modalData"></div>
+    </div>
+</div>
+     
+        <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.process');
+
+    buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            // Get the closest row
+            const row = button.closest('tr');
+
+            // Get the complaintId (dis) from the row
+            const complaintId = row.querySelector('td:nth-child(12)').textContent;
+
+            // Trigger the PDF generation endpoint
+            fetch(`/generate-pdf?dis=${encodeURIComponent(complaintId)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // If successful, open a new window with the generated PDF
+                        window.open('public/pdfs/FIR_Report.pdf', '_blank');
+                    } else {
+                        console.error('Error generating PDF:', data.message);
+                        // Handle the error as needed
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Handle the error as needed
+                });
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Existing PDF fetch code remains...
+
+    // Modal Code
+    const modal = document.getElementById('detailModal');
+    const modalData = document.getElementById('modalData');
+    const span = document.querySelector('.modal .close');
+
+    document.querySelectorAll('.view-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const row = this.closest('tr');
+            const hiddenCells = row.querySelectorAll('td[style*="display:none"]');
+            let html = '<h3>Hidden Complaint Details</h3><ul>';
+
+            hiddenCells.forEach(cell => {
+                const th = row.parentElement.querySelector('tr').children[cell.cellIndex].textContent;
+                html += `<li><strong>${th}:</strong> ${cell.textContent}</li>`;
+            });
+
+            html += '</ul>';
+            modalData.innerHTML = html;
+            modal.style.display = "block";
+        });
+    });
+
+    span.onclick = () => modal.style.display = "none";
+    window.onclick = e => { if (e.target == modal) modal.style.display = "none"; };
+});
+</script>
+
 
     </body>
 </html>
